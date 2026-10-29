@@ -13,6 +13,11 @@
 > Show what you're watching or listening to on Kodi — live, in your Discord status.
 > Works **locally** (Kodi + Discord on the same PC) and **remotely** (e.g. LibreELEC → a PC running Discord).
 
+
+### Example — Listening to music
+
+![Listening to music example](docs/music-example.png)
+
 ---
 
 ## ✨ Features

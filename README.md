@@ -1,8 +1,5 @@
 # 🎬 KodiCord — Discord Rich Presence for Kodi
 
-<img width="300" height="300" alt="image" src="https://github.com/user-attachments/assets/54f387ad-1eb6-4ca2-ba83-3a91c2b0813a" />
-
-
 [![Discord](https://img.shields.io/discord/1468295714961494029?color=7289da&label=Join%20Our%20Discord&logo=discord&logoColor=white&style=for-the-badge)](https://discord.gg/UbPRh74PzV)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -13,153 +10,119 @@
 > Show what you're watching or listening to on Kodi — live, in your Discord status.
 > Works **locally** (Kodi + Discord on the same PC) and **remotely** (e.g. LibreELEC → a PC running Discord).
 
-
-### Example — Listening to music
-
-![Listening to music example](docs/music-example.png)
-
-### Example — Watching a video (YouTube)
-
-![Watching a video example](docs/video-example.png)
-
-> **Tip:** Click the thumbnail or title in Discord to open the video (YouTube) or song (any platform).
-
 ---
 
 ## ✨ Features
 
-- 🎥 **Video presence** — movies, TV shows, YouTube and general streams (with thumbnails)
-- 🎵 **Music presence** — track, artist and album, with album art (iTunes artwork lookup)
+- 🎥 **Video presence** — movies, TV shows, YouTube and general streams, with thumbnails
+- 🎵 **Music presence** — track, artist and album, with album art
 - ⏸️ **Pause / resume / stop** handling — timestamps freeze on pause, presence clears on stop
 - 🖼️ **Thumbnails** — resolves Kodi `image://` URLs, YouTube video IDs, and remote artwork
 - 🔗 **Clickable links** — click the thumbnail or title in Discord to open the video (YouTube) or song (any platform)
 - 🌐 **Remote bridge mode** — run Discord on a PC, let a LibreELEC/Kodi device publish to it
 - 🔒 **Privacy modes** — full details, title only, or fully generic
-- 🚫 **Blacklist** — skip sharing info for selected source addons (e.g. YouTube). Run the addon (Enter on it in *My add-ons*) → *Manage addon blacklist*.
-- ⚙️ **Configurable** — client ID, update interval, timestamps, connection mode, presence title
-
-## 📦 Installation
-
-### 1. Create a Discord application
-
-1. Go to the [Discord Developer Portal](https://discord.com/developers/applications) → **New Application**.
-2. Give it a name (e.g. `KodiCord`).
-3. Copy the **Application ID** (Client ID).
-
-### 2. Install the Kodi addon
-
-**From a zip (recommended):**
-
-1. Download the latest `service.kodicord-*.zip` from [Releases](../../releases).
-2. In Kodi: **Add-ons → Install from zip file** → select the zip.
-3. The service starts automatically.
-
-**Manually:**
-
-1. Copy the `service.kodicord` folder to your Kodi addons directory:
-   - Linux/macOS: `~/.kodi/addons/`
-   - LibreELEC: `/storage/.kodi/addons/`
-2. Restart Kodi.
-
-### 3. Configure
-
-In Kodi: **Add-ons → My add-ons → Services → KodiCord → Configure**
-
-- **Enable** — turn on Rich Presence
-- **Connection mode** — *Local Discord client* or *Remote bridge (PC)*
-- **Discord Application (Client) ID** — paste the ID from step 1
-- **What to share** — full details / title only / generic
-- **Show timestamps** — show elapsed/remaining time
-- **Presence title** — application name / media type on Kodi / custom text
-
-## 🌐 Remote mode (LibreELEC → PC)
-
-Run the companion bridge on the PC that hosts your Discord client:
-
-```bash
-cd companion
-python3 discord_bridge.py --client-id YOUR_CLIENT_ID --port 8765
-```
-
-Then in the Kodi addon settings:
-
-- **Connection mode** → *Remote bridge (PC)*
-- **Bridge host** → your PC's IP (e.g. `192.168.1.10`)
-- **Bridge port** → `8765`
-- **Bridge auth token** → optional shared secret
-
-Make sure your firewall allows the chosen port.
-
-> 💡 Tip: keep the bridge running with `systemd`, `tmux`, or a scheduled task.
-
-## 🎛️ Presence title
-
-Discord always prefixes the top line with *Playing / Listening to / Watching*.
-By default KodiCord uses your Discord application's name. You can override it:
-
-- **Application name** (default) — uses the name from the Developer Portal
-- **Media title** — the video title, or `Artist - Title` for music (default)
-- **Media type on Kodi** — e.g. *Listening to music on Kodi*
-- **Custom** — any text you like
-
-Change it in **Settings → Presence → Presence title**.
-
-## 🛠️ Development
-
-```bash
-# Syntax check
-python3 -m compileall -q .
-
-# Run the bridge locally
-cd companion && python3 discord_bridge.py --client-id YOUR_CLIENT_ID --port 8765
-```
-
-### Project layout
-
-```
-.
-├── addon.xml              # Kodi addon manifest (service entry point)
-├── service.py             # Kodi monitor: metadata, pause/stop, calls IPC
-├── addon.py               # Settings dialog + connection test helpers
-├── resources/
-│   ├── settings.xml       # Kodi settings schema
-│   ├── icon.png
-│   └── lib/
-│       ├── discord_ipc.py # Pure-Python Discord IPC client + activity helpers
-│       └── remote_client.py
-├── companion/
-│   ├── discord_bridge.py  # PC-side HTTP bridge → Discord IPC
-│   └── discord_ipc.py     # Copy used by the bridge
-└── docs/
-```
-
-## 🐛 Troubleshooting
-
-- **Nothing shows up in Discord** — make sure Discord is running and that *Activity Status* is enabled (Settings → Activity Privacy → "Display current activity as a status message").
-- **Thumbnails missing** — Discord only accepts `https://` image URLs. Local `image://` URLs are decoded; YouTube IDs are resolved to `i.ytimg.com`.
-- **Remote mode fails** — verify the bridge is running (`curl http://PC_IP:8765/ping`) and the firewall allows the port.
-- **Old application name still shown** — Discord caches the app name; fully quit and reopen Discord, or wait ~1 hour for the cache to expire. KodiCord also sends the current name in the payload to bypass the stale cache.
-- **Album art wrong** — KodiCord queries the iTunes Search API by `artist + title` and caches by `artist-title`.
-
-## 🤝 Contributing
-
-Issues and pull requests are welcome. Please:
-
-1. Fork the repo and create a feature branch.
-2. Keep changes consistent with the existing style.
-3. Run `python3 -m compileall -q .` before submitting.
-
-## 📄 License
-
-Released under the [MIT License](LICENSE).
+- 🚫 **Per-addon blacklist** — skip presence for chosen source addons
+- 🎵 **Song links (optional)** — universal links for songs across platforms
 
 ---
 
-Made with ❤️ for the Kodi & Discord communities.
+<details>
+<summary><b>📸 Examples</b></summary>
 
----
+### Listening to music
 
-## 🙏 Credits & Sources
+![Listening to music example](docs/music-example.png)
+
+### Watching a video (YouTube)
+
+![Watching a video example](docs/video-example.png)
+
+> **Tip:** Click the thumbnail or title in Discord to open the video (YouTube) or song (any platform).
+
+</details>
+
+<details>
+<summary><b>📦 Installation</b></summary>
+
+1. Download the latest release zip from the [Releases page](https://github.com/Nigel1992/KodiCord/releases).
+2. In Kodi: **Add-ons → Install from zip file** → select the downloaded zip.
+3. Enable the addon if prompted.
+
+</details>
+
+<details>
+<summary><b>⚙️ Configuration</b></summary>
+
+Open **Add-ons → My add-ons → Services → KodiCord → Configure**.
+
+| Setting | Description |
+|---|---|
+| **Enable Discord Rich Presence** | Turn presence on/off |
+| **Connection mode** | Local Discord client or Remote bridge (PC) |
+| **Client ID** | Discord application (client) ID |
+| **Update interval** | How often presence is refreshed (seconds) |
+| **Clear on stop** | Clear presence when nothing is playing |
+| **Show timestamps** | Show elapsed/remaining time |
+| **Bridge host / port / token / timeout** | Remote bridge connection settings |
+| **Privacy mode** | Full details, title only, or generic |
+| **Use filename if no metadata** | Fall back to filename |
+| **Blacklisted addons** | Comma-separated addon IDs to skip |
+| **Manage addon blacklist** | Open a picker to choose blacklisted addons |
+| **Presence title** | Discord application name, media title, media type, or custom text |
+| **Custom presence title** | Custom text for presence title |
+
+</details>
+
+<details>
+<summary><b>🌐 Remote Bridge Mode</b></summary>
+
+Run the companion bridge on a PC that has Discord installed, then point Kodi to it:
+
+1. Start `companion/discord_bridge.py` on the PC.
+2. In KodiCord settings, set **Connection mode** to **Remote bridge (PC)**.
+3. Enter the PC's IP/hostname, port, and optional token.
+
+</details>
+
+<details>
+<summary><b>🚫 Blacklist</b></summary>
+
+Skip sharing presence for selected source addons:
+
+- Use **Manage addon blacklist** in settings to pick addons from a list, or
+- Manually enter comma-separated addon IDs in **Blacklisted addons**.
+
+</details>
+
+<details>
+<summary><b>🔒 Privacy</b></summary>
+
+Choose how much detail is shared:
+
+- **Full title and details**
+- **Title only**
+- **Generic ('Watching a movie')**
+
+</details>
+
+<details>
+<summary><b>🔑 Song Links (optional)</b></summary>
+
+A default MusicLink API key is included so the feature works out of the box for everyone.
+It is **free to use**, but limited to ~300 lookups/month. For heavier use, create your own key:
+
+1. Sign up at [song.link (Odesli)](https://song.link) and obtain an API key.
+2. Edit `MUSICLINK_API_KEY` in both:
+   - `resources/lib/discord_ipc.py`
+   - `companion/discord_ipc.py`
+3. Rebuild/reinstall the addon.
+
+This feature is **optional** — presence still works without it. A settings option to enter your own key without editing files is coming soon.
+
+</details>
+
+<details>
+<summary><b>🙏 Credits & Sources</b></summary>
 
 - **Kodi** — JSON-RPC / player & addon APIs (https://kodi.tv)
 - **Discord** — Rich Presence IPC (https://discord.com/developers)
@@ -170,15 +133,6 @@ Made with ❤️ for the Kodi & Discord communities.
 
 Special thanks to the Kodi and LibreELEC communities.
 
-### 🔑 Song Links API key
-
-A default MusicLink API key is included so the feature works out of the box for everyone.
-It is **free to use**, but limited to ~300 lookups/month. For heavier use, create your own key:
-
-1. Sign up at https://song.link (Odesli) and obtain an API key.
-2. Edit `MUSICLINK_API_KEY` in both:
-   - `resources/lib/discord_ipc.py`
-   - `companion/discord_ipc.py`
-3. Rebuild/reinstall the addon.
-
-A settings option to enter your own key without editing files is coming soon.
+</details>
+EOF
+git add README.md && git commit -m "Use collapsible sections in README" && git push origin main 2>&1 | tail

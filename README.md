@@ -1,5 +1,7 @@
 # 🎬 KodiCord — Discord Rich Presence for Kodi
 
+![KodiCord icon](icon.png)
+
 [![Discord](https://img.shields.io/discord/1468295714961494029?color=7289da&label=Join%20Our%20Discord&logo=discord&logoColor=white&style=for-the-badge)](https://discord.gg/UbPRh74PzV)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)

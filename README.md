@@ -165,6 +165,7 @@ Made with ❤️ for the Kodi & Discord communities.
 - **Discord** — Rich Presence IPC (https://discord.com/developers)
 - **iTunes Search API** — album artwork lookup for music (https://developer.apple.com/library/archive/documentation/AudioVideo/Conceptual/iTuneSearchAPI/)
 - **YouTube** — video thumbnails via `img.youtube.com`
+- **Songlink / Odesli API** — universal links for songs across platforms (https://song.link)
 - **LibreELEC** — remote bridge hosting (https://libreelec.tv)
 
 Special thanks to the Kodi and LibreELEC communities.

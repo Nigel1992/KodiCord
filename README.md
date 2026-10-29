@@ -3,6 +3,8 @@
 <img width="300" height="300" alt="image" src="https://github.com/user-attachments/assets/54f387ad-1eb6-4ca2-ba83-3a91c2b0813a" />
 
 
+[![Discord](https://img.shields.io/discord/1468295714961494029?color=7289da&label=Join%20Our%20Discord&logo=discord&logoColor=white&style=for-the-badge)](https://discord.gg/UbPRh74PzV)
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Kodi](https://img.shields.io/badge/Kodi-19%2B-blue?logo=kodi)](https://kodi.tv)
 [![Python](https://img.shields.io/badge/Python-3.x-3776AB?logo=python&logoColor=white)](https://www.python.org/)

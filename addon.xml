@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="service.kodicord" name="KodiCord" version="1.0.0" provider-name="Nigel">
+    <requires>
+        <import addon="xbmc.python" version="3.0.0"/>
+        <import addon="script.module.requests" version="2.22.0" optional="true"/>
+    </requires>
+    <extension point="xbmc.service" library="service.py"/>
+    <extension point="xbmc.python.script" library="addon.py">
+        <provides>executable</provides>
+    </extension>
+    <extension point="xbmc.addon.metadata">
+        <platform>all</platform>
+        <summary lang="en_GB">Discord Rich Presence for Kodi (local or remote PC)</summary>
+        <description lang="en_GB">Runs in the background and updates your Discord status with the movie, video, or song currently playing in Kodi. Can connect to a Discord client running on another PC (e.g. LibreELEC -> gaming PC) via the included companion bridge.</description>
+        <disclaimer lang="en_GB">Not affiliated with Discord or Kodi.</disclaimer>
+        <license>MIT</license>
+        <source>https://github.com/Nigel1992/KodiCord</source>
+        <assets>
+            <icon>icon.png</icon>
+        </assets>
+    </extension>
+</addon>

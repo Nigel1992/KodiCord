@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Compile Python
+        run: python -m compileall -q .
+      - name: Build addon zip
+        run: |
+          rm -f service.kodicord-*.zip
+          zip -r service.kodicord-1.0.0.zip . -x "*.git*" "*.pyc" "__pycache__/*" "*.zip"
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: service.kodicord-1.0.0
+          path: service.kodicord-1.0.0.zip

@@ -32,6 +32,7 @@
 - 🎵 **Music presence** — track, artist and album, with album art (iTunes artwork lookup)
 - ⏸️ **Pause / resume / stop** handling — timestamps freeze on pause, presence clears on stop
 - 🖼️ **Thumbnails** — resolves Kodi `image://` URLs, YouTube video IDs, and remote artwork
+- 🔗 **Clickable links** — click the thumbnail or title in Discord to open the video (YouTube) or song (any platform)
 - 🌐 **Remote bridge mode** — run Discord on a PC, let a LibreELEC/Kodi device publish to it
 - 🔒 **Privacy modes** — full details, title only, or fully generic
 - 🚫 **Blacklist** — skip sharing info for selected source addons (e.g. YouTube). Run the addon (Enter on it in *My add-ons*) → *Manage addon blacklist*.

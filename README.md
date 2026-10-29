@@ -169,3 +169,16 @@ Made with ❤️ for the Kodi & Discord communities.
 - **LibreELEC** — remote bridge hosting (https://libreelec.tv)
 
 Special thanks to the Kodi and LibreELEC communities.
+
+### 🔑 Song Links API key
+
+A default MusicLink API key is included so the feature works out of the box for everyone.
+It is **free to use**, but limited to ~300 lookups/month. For heavier use, create your own key:
+
+1. Sign up at https://song.link (Odesli) and obtain an API key.
+2. Edit `MUSICLINK_API_KEY` in both:
+   - `resources/lib/discord_ipc.py`
+   - `companion/discord_ipc.py`
+3. Rebuild/reinstall the addon.
+
+A settings option to enter your own key without editing files is coming soon.

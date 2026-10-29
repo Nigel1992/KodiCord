@@ -156,3 +156,15 @@ Released under the [MIT License](LICENSE).
 ---
 
 Made with ❤️ for the Kodi & Discord communities.
+
+---
+
+## 🙏 Credits & Sources
+
+- **Kodi** — JSON-RPC / player & addon APIs (https://kodi.tv)
+- **Discord** — Rich Presence IPC (https://discord.com/developers)
+- **iTunes Search API** — album artwork lookup for music (https://developer.apple.com/library/archive/documentation/AudioVideo/Conceptual/iTuneSearchAPI/)
+- **YouTube** — video thumbnails via `img.youtube.com`
+- **LibreELEC** — remote bridge hosting (https://libreelec.tv)
+
+Special thanks to the Kodi and LibreELEC communities.

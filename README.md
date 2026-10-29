@@ -1,5 +1,8 @@
 # 🎬 KodiCord — Discord Rich Presence for Kodi
 
+<img width="300" height="300" alt="image" src="https://github.com/user-attachments/assets/54f387ad-1eb6-4ca2-ba83-3a91c2b0813a" />
+
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Kodi](https://img.shields.io/badge/Kodi-19%2B-blue?logo=kodi)](https://kodi.tv)
 [![Python](https://img.shields.io/badge/Python-3.x-3776AB?logo=python&logoColor=white)](https://www.python.org/)

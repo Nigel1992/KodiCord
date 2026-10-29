@@ -134,5 +134,3 @@ This feature is **optional** — presence still works without it. A settings opt
 Special thanks to the Kodi and LibreELEC communities.
 
 </details>
-EOF
-git add README.md && git commit -m "Use collapsible sections in README" && git push origin main 2>&1 | tail

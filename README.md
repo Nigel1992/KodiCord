@@ -18,6 +18,12 @@
 
 ![Listening to music example](docs/music-example.png)
 
+### Example — Watching a video (YouTube)
+
+![Watching a video example](docs/video-example.png)
+
+> **Tip:** Click the thumbnail or title in Discord to open the video (YouTube) or song (any platform).
+
 ---
 
 ## ✨ Features

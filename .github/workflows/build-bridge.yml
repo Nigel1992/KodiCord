@@ -1,0 +1,36 @@
+name: Build companion bridge
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install PyInstaller
+        run: pip install pyinstaller pillow
+      - name: Build bridge executable
+        working-directory: companion
+        shell: bash
+        run: |
+          if [ "$RUNNER_OS" = "Windows" ]; then SEP=";"; else SEP=":"; fi
+          pyinstaller --onefile --noconsole \
+            --name kodicord_bridge \
+            --icon kodicord_tray.ico \
+            --add-data "kodicord_tray.ico${SEP}." \
+            --add-data "kodicord_tray_monochrome.ico${SEP}." \
+            discord_bridge.py
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: kodicord_bridge_${{ matrix.os }}
+          path: companion/dist/*

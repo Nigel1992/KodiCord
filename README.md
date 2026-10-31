@@ -1,3 +1,5 @@
+[![Vibe Coded](https://img.shields.io/badge/Vibe_Coded-✨-8A2BE2?style=for-the-badge)](https://github.com)
+
 # 🎬 KodiCord — Discord Rich Presence for Kodi
 
 ![KodiCord icon](icon.png)

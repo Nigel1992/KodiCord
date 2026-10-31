@@ -84,6 +84,8 @@ Run the companion bridge on a PC that has Discord installed, then point Kodi to 
 2. In KodiCord settings, set **Connection mode** to **Remote bridge (PC)**.
 3. Enter the PC's IP/hostname, port, and optional token.
 
+> On Windows and Linux the bridge shows a **KodiCord icon in the system tray (notification area)** while it runs, so you can confirm it is active. Right-click the icon for options: toggle **Monochrome/Color** icon, **Restart Discord connection**, **Show status**, and **Exit KodiCord bridge**. Run it with `pythonw` instead of `python` on Windows if you do not want a console window.
+
 </details>
 
 <details>

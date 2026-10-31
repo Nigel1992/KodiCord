@@ -139,4 +139,6 @@ This feature is **optional** — presence still works without it. A settings opt
 
 Special thanks to the Kodi and LibreELEC communities.
 
+Tray icon: <a href="https://www.flaticon.com/free-icons/revive" title="revive icons">Revive icons created by meaicon - Flaticon</a>
+
 </details>

@@ -88,6 +88,8 @@ Run the companion bridge on a PC that has Discord installed, then point Kodi to 
 
 > On Windows and Linux the bridge shows a **KodiCord icon in the system tray (notification area)** while it runs, so you can confirm it is active. Right-click the icon for options: toggle **Monochrome/Color** icon, **Restart Discord connection**, **Show status**, and **Exit KodiCord bridge**. Run it with `pythonw` instead of `python` on Windows if you do not want a console window.
 
+> On Linux, the bridge also detects Discord installations packaged as a Snap or Flatpak.
+
 </details>
 
 <details>

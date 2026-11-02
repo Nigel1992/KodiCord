@@ -85,6 +85,8 @@ class DiscordIPC:
         for i in range(10):
             if uid is not None:
                 candidates.append("/run/user/%d/discord-ipc-%d" % (uid, i))
+                candidates.append("/run/user/%d/snap.discord/discord-ipc-%d" % (uid, i))
+                candidates.append("/run/user/%d/app/com.discordapp.Discord/discord-ipc-%d" % (uid, i))
             candidates.append("/tmp/discord-ipc-%d" % i)
         for app in ("discord", "Discord", "discordcanary", "discordptb",
                     "discorddevelopment", "discord-canary", "discord-ptb"):

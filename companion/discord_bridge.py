@@ -82,6 +82,11 @@ class BridgeState:
 STATE = None
 _TRAY_INSTANCE = None
 
+try:
+    import winreg
+except Exception:
+    winreg = None
+
 
 class Handler(BaseHTTPRequestHandler):
     def _auth_ok(self):
@@ -266,6 +271,190 @@ def _status_text():
     except Exception as e:
         return "Status error: %s" % e
 
+# ---------------------------------------------------------------------------
+# Launch at startup (autostart) helpers - cross-platform (Windows + Linux).
+# ---------------------------------------------------------------------------
+
+AUTOSTART_NAME = "KodiCordBridge"
+
+
+def _autostart_command():
+    args = [sys.executable, os.path.abspath(__file__)] + list(sys.argv[1:])
+    if sys.platform == "win32":
+        import subprocess
+        return subprocess.list2cmdline(args)
+    import shlex
+    return shlex.join(args)
+
+
+def _linux_autostart_dir(override=None):
+    if override is not None:
+        return override
+    base = os.environ.get("XDG_CONFIG_HOME") or os.path.join(os.path.expanduser("~"), ".config")
+    return os.path.join(base, "autostart")
+
+
+def _linux_desktop_path(autostart_dir=None):
+    return os.path.join(_linux_autostart_dir(autostart_dir), "kodicord-bridge.desktop")
+
+
+def _linux_autostart_enabled(autostart_dir=None):
+    return os.path.exists(_linux_desktop_path(autostart_dir))
+
+
+def _linux_enable_autostart(autostart_dir=None):
+    d = _linux_autostart_dir(autostart_dir)
+    try:
+        os.makedirs(d, exist_ok=True)
+    except Exception:
+        return False
+    path = os.path.join(d, "kodicord-bridge.desktop")
+    try:
+        with open(path, "w") as f:
+            f.write("[Desktop Entry]\n")
+            f.write("Type=Application\n")
+            f.write("Name=KodiCord Bridge\n")
+            f.write("Comment=KodiCord Discord Rich Presence bridge\n")
+            f.write("Exec=%s\n" % _autostart_command())
+            f.write("Terminal=false\n")
+            f.write("X-GNOME-Autostart-enabled=true\n")
+        return True
+    except Exception:
+        return False
+
+
+def _linux_disable_autostart(autostart_dir=None):
+    path = _linux_desktop_path(autostart_dir)
+    try:
+        if os.path.exists(path):
+            os.remove(path)
+        return True
+    except Exception:
+        return False
+
+
+def _windows_autostart_enabled():
+    if winreg is None:
+        return False
+    try:
+        key = winreg.OpenKey(winreg.HKEY_CURRENT_USER,
+                            r"Software\Microsoft\Windows\CurrentVersion\Run", 0,
+                            winreg.KEY_READ)
+        try:
+            val, _ = winreg.QueryValueEx(key, AUTOSTART_NAME)
+            return bool(val)
+        finally:
+            winreg.CloseKey(key)
+    except Exception:
+        return False
+
+
+def _windows_enable_autostart():
+    if winreg is None:
+        return False
+    try:
+        key = winreg.OpenKey(winreg.HKEY_CURRENT_USER,
+                            r"Software\Microsoft\Windows\CurrentVersion\Run", 0,
+                            winreg.KEY_SET_VALUE)
+        try:
+            winreg.SetValueEx(key, AUTOSTART_NAME, 0, winreg.REG_SZ,
+                              _autostart_command())
+        finally:
+            winreg.CloseKey(key)
+        return True
+    except Exception:
+        return False
+
+
+def _windows_disable_autostart():
+    if winreg is None:
+        return False
+    try:
+        key = winreg.OpenKey(winreg.HKEY_CURRENT_USER,
+                            r"Software\Microsoft\Windows\CurrentVersion\Run", 0,
+                            winreg.KEY_SET_VALUE)
+        try:
+            winreg.DeleteValue(key, AUTOSTART_NAME)
+        finally:
+            winreg.CloseKey(key)
+        return True
+    except Exception:
+        return True
+
+
+def _mac_autostart_path():
+    return os.path.join(os.path.expanduser("~"), "Library", "LaunchAgents",
+                        "com.kodicord.bridge.plist")
+
+
+def _mac_autostart_enabled():
+    return os.path.exists(_mac_autostart_path())
+
+
+def _mac_enable_autostart():
+    try:
+        import plistlib
+        path = _mac_autostart_path()
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        plist = {
+            "Label": "com.kodicord.bridge",
+            "ProgramArguments": [sys.executable, os.path.abspath(__file__)] + list(sys.argv[1:]),
+            "RunAtLoad": True,
+        }
+        with open(path, "wb") as f:
+            plistlib.dump(plist, f)
+        return True
+    except Exception:
+        return False
+
+
+def _mac_disable_autostart():
+    path = _mac_autostart_path()
+    try:
+        if os.path.exists(path):
+            os.remove(path)
+        return True
+    except Exception:
+        return False
+
+
+def autostart_enabled():
+    if sys.platform == "win32":
+        return _windows_autostart_enabled()
+    if sys.platform.startswith("linux"):
+        return _linux_autostart_enabled()
+    if sys.platform == "darwin":
+        return _mac_autostart_enabled()
+    return False
+
+
+def enable_autostart(autostart_dir=None):
+    if sys.platform == "win32":
+        return _windows_enable_autostart()
+    if sys.platform.startswith("linux"):
+        return _linux_enable_autostart(autostart_dir)
+    if sys.platform == "darwin":
+        return _mac_enable_autostart()
+    return False
+
+
+def disable_autostart(autostart_dir=None):
+    if sys.platform == "win32":
+        return _windows_disable_autostart()
+    if sys.platform.startswith("linux"):
+        return _linux_disable_autostart(autostart_dir)
+    if sys.platform == "darwin":
+        return _mac_disable_autostart()
+    return False
+
+
+def toggle_autostart(autostart_dir=None):
+    if autostart_enabled():
+        disable_autostart(autostart_dir)
+    else:
+        enable_autostart(autostart_dir)
+    return autostart_enabled()
+
 class WindowsTray:
     def __init__(self, tooltip="KodiCord bridge", on_exit=None):
         self.tooltip = tooltip
@@ -384,6 +573,8 @@ class WindowsTray:
                     _restart_discord()
                 elif cmd == 2003:
                     self._show_status(hwnd, user32)
+                elif cmd == 2004:
+                    toggle_autostart()
                 return 0
             if msg == WM_DESTROY:
                 user32.PostQuitMessage(0)
@@ -460,6 +651,8 @@ class WindowsTray:
         user32.AppendMenuW(menu, 0, 2001, "Monochrome icon" if not self.monotone else "Color icon")
         user32.AppendMenuW(menu, 0, 2002, "Restart Discord connection")
         user32.AppendMenuW(menu, 0, 2003, "Show status")
+        flags = 0x0008 if autostart_enabled() else 0
+        user32.AppendMenuW(menu, flags, 2004, "Launch at startup")
         user32.AppendMenuW(menu, 0, 1001, "Exit KodiCord bridge")
         pt = None
         from ctypes import wintypes as _w
@@ -518,6 +711,9 @@ class QtTray:
         self._mono_action = menu.addAction("Monochrome icon")
         restart_action = menu.addAction("Restart Discord connection")
         status_action = menu.addAction("Show status")
+        self._launch_action = menu.addAction("Launch at startup")
+        self._launch_action.setCheckable(True)
+        self._launch_action.setChecked(autostart_enabled())
         exit_action = menu.addAction("Exit KodiCord bridge")
         def _toggle():
             self.monotone = not self.monotone
@@ -527,6 +723,13 @@ class QtTray:
         self._mono_action.triggered.connect(_toggle)
         restart_action.triggered.connect(_restart_discord)
         status_action.triggered.connect(lambda: self._tray.showMessage("KodiCord bridge", _status_text(), QtWidgets.QSystemTrayIcon.MessageIcon.Information, 3000))
+        def _toggle_launch(checked):
+            if checked:
+                enable_autostart()
+            else:
+                disable_autostart()
+            self._launch_action.setChecked(autostart_enabled())
+        self._launch_action.toggled.connect(_toggle_launch)
         def _exit():
             tray.hide()
             if self.on_exit is not None:
@@ -570,7 +773,12 @@ def _try_pystray(on_exit=None, tooltip="KodiCord bridge running"):
             except Exception:
                 pass
 
-    menu = pystray.Menu(pystray.MenuItem("Exit KodiCord bridge", on_exit_cb))
+    def _toggle_launch(icon, item):
+        toggle_autostart()
+    menu = pystray.Menu(
+        pystray.MenuItem("Launch at startup", _toggle_launch, checked=lambda item: autostart_enabled()),
+        pystray.MenuItem("Exit KodiCord bridge", on_exit_cb),
+    )
     icon = pystray.Icon("KodiCordBridge", img, tooltip, menu)
     t = threading.Thread(target=icon.run, daemon=True)
     t.start()

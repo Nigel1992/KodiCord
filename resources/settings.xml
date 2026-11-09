@@ -7,6 +7,7 @@
         <setting id="update_interval" type="slider" label="Update interval (seconds)" default="5" range="2,1,30" option="int"/>
         <setting id="clear_on_stop" type="bool" label="Clear status when nothing is playing" default="true"/>
         <setting id="show_timestamps" type="bool" label="Show elapsed/remaining time" default="true"/>
+        <setting id="notify_on_new" type="bool" label="Show notification when new media plays" default="false"/>
     </category>
     <category label="Remote bridge">
         <setting id="remote_host" type="text" label="Bridge host (PC IP/hostname)" default="192.168.1.10"/>
@@ -25,5 +26,8 @@
     <category label="Presence">
         <setting id="presence_name_mode" type="enum" label="Presence title" default="1" values="Discord application name|Media title|Media type on Kodi|Custom text"/>
         <setting id="presence_custom_name" type="text" label="Custom presence title" default="" enable="eq(-1,3)"/>
+    </category>
+    <category label="Debug">
+        <setting id="debug_notify" type="bool" label="Show debug info (PC connection) in notifications" default="false"/>
     </category>
 </settings>

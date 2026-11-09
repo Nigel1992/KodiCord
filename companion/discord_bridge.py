@@ -137,6 +137,7 @@ class Handler(BaseHTTPRequestHandler):
                 self._send_json(200 if ok else 503, {"ok": ok})
                 return
             # metadata-style request -> use DiscordIPC.update_activity
+            notify = bool(data.pop("notify", False))
             print("[bridge] %s | %s | thumb=%s | url=%s" % (
                 data.get("media_type"), data.get("title"),
                 data.get("thumbnail"), data.get("media_url")))
@@ -149,9 +150,35 @@ class Handler(BaseHTTPRequestHandler):
                 if isinstance(resp, dict) and resp.get("evt") == "ERROR":
                     print("[bridge] Discord rejected activity: %s" % (resp.get("data"),))
                     ok = False
+                if ok and notify:
+                    try:
+                        mtype = data.get("media_type") or "video"
+                        title = (data.get("title") or "").strip()
+                        artist = (data.get("artist") or "").strip()
+                        if mtype == "music" and artist and title:
+                            msg = "%s - %s" % (artist, title)
+                        elif title:
+                            msg = title
+                        elif artist:
+                            msg = artist
+                        else:
+                            msg = "New media playing"
+                        _notify_tray("KodiCord", msg)
+                    except Exception:
+                        pass
                 self._send_json(200 if ok else 503, {"ok": ok})
             except Exception as e:
                 print("[bridge] update_activity failed: %s" % e)
+                self._send_json(503, {"ok": False})
+            return
+        if path == "/notify":
+            title = (data.get("title") or "KodiCord").strip()
+            message = (data.get("message") or "").strip()
+            try:
+                _notify_tray(title, message)
+                self._send_json(200, {"ok": True})
+            except Exception as e:
+                print("[bridge] notify failed: %s" % e)
                 self._send_json(503, {"ok": False})
             return
         self._send_json(404, {"ok": False})
@@ -260,6 +287,51 @@ def _restart_discord():
     except Exception as e:
         print("[bridge] restart failed: %s" % e)
 
+
+
+def _notify_tray(title, message):
+    global _TRAY_INSTANCE
+    t = _TRAY_INSTANCE
+    if t is None:
+        return
+    try:
+        if hasattr(t, "_tray"):  # Qt
+            try:
+                from PyQt6 import QtWidgets
+                icon = QtWidgets.QSystemTrayIcon.MessageIcon.Information
+            except Exception:
+                try:
+                    from PyQt5 import QtWidgets
+                    icon = QtWidgets.QSystemTrayIcon.MessageIcon.Information
+                except Exception:
+                    icon = None
+            if icon is not None:
+                t._tray.showMessage(str(title)[:63], str(message)[:255], icon, 4000)
+            return
+        if hasattr(t, "_nid"):  # Windows
+            import ctypes
+            nid = t._nid
+            nid.uFlags = 0x01 | 0x02 | 0x04 | 0x10
+            nid.szInfo = str(message)[:255]
+            nid.szInfoTitle = str(title)[:63]
+            nid.dwInfoFlags = 0x01
+            t._shell32.Shell_NotifyIconW(0x01, ctypes.byref(nid))  # NIM_MODIFY
+            # reset
+            nid.uFlags = 0x01 | 0x02 | 0x04
+            nid.szInfo = ""
+            return
+        # pystray
+        if hasattr(t, "notify"):
+            try:
+                t.notify(str(message), str(title))
+            except Exception:
+                try:
+                    t.notify(str(message))
+                except Exception:
+                    pass
+            return
+    except Exception:
+        pass
 
 
 def _status_text():

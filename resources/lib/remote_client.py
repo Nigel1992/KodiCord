@@ -36,6 +36,9 @@ class RemoteBridgeClient:
     def clear(self):
         return self._post("/activity", {"clear": True})
 
+    def notify(self, title="", message=""):
+        return self._post("/notify", {"title": title, "message": message})
+
     def ping(self):
         try:
             req = urllib.request.Request(self._url("/ping"), method="GET")

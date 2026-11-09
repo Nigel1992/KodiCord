@@ -67,6 +67,8 @@ Open **Add-ons → My add-ons → Services → KodiCord → Configure**.
 | **Update interval** | How often presence is refreshed (seconds) |
 | **Clear on stop** | Clear presence when nothing is playing |
 | **Show timestamps** | Show elapsed/remaining time |
+| **Show notification when new media plays** | Pop up a notification on Kodi when a new song/video starts |
+| **Show debug info (PC connection) in notifications** | Append PC bridge connection status to notifications (Debug category) |
 | **Bridge host / port / token / timeout** | Remote bridge connection settings |
 | **Privacy mode** | Full details, title only, or generic |
 | **Use filename if no metadata** | Fall back to filename |

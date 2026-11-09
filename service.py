@@ -706,6 +706,8 @@ def update_status():
     elapsed = info.get("elapsed") or 0.0
     privacy = s("privacy_mode", "0")
     show_ts = sb("show_timestamps", True)
+    notify = sb("notify_on_new", False)
+    debug_notify = sb("debug_notify", False)
 
     # presence title override (top line of the Discord card)
     presence_mode = (s("presence_name_mode", "1") or "1").strip().lower()
@@ -735,6 +737,30 @@ def update_status():
             )
             if not ok:
                 log("Remote bridge update failed", xbmc.LOGWARNING)
+            if ok and notify:
+                try:
+                    msg = title
+                    if media_type == "music" and artist:
+                        msg = "%s - %s" % (artist, title) if title else artist
+                    elif not msg:
+                        msg = "New media"
+                    if debug_notify:
+                        try:
+                            pc = "PC connected" if get_remote().ping() else "PC NOT connected"
+                        except Exception:
+                            pc = "PC status unknown"
+                        msg = "%s | %s" % (pc, msg)
+                    log("Showing Kodi notification: %s" % msg)
+                    try:
+                        xbmc.executebuiltin('Notification("KodiCord", "%s", 4000)' % str(msg).replace('"', "'"))
+                    except Exception as e:
+                        log("builtin notify failed: %s" % e, xbmc.LOGWARNING)
+                        try:
+                            xbmcgui.Notification("KodiCord", msg, xbmcgui.NOTIFICATION_INFO, 4000)
+                        except Exception:
+                            pass
+                except Exception:
+                    pass
         else:
             d = ensure_local()
             if d is None:
@@ -745,6 +771,24 @@ def update_status():
                 paused=paused, privacy_mode=privacy, show_timestamps=show_ts,
                 total=total, elapsed=elapsed, activity_name=activity_name
             )
+            if notify:
+                try:
+                    msg = title
+                    if media_type == "music" and artist:
+                        msg = "%s - %s" % (artist, title) if title else artist
+                    elif not msg:
+                        msg = "New media"
+                    log("Showing Kodi notification: %s" % msg)
+                    try:
+                        xbmc.executebuiltin('Notification("KodiCord", "%s", 4000)' % str(msg).replace('"', "'"))
+                    except Exception as e:
+                        log("builtin notify failed: %s" % e, xbmc.LOGWARNING)
+                        try:
+                            xbmcgui.Notification("KodiCord", msg, xbmcgui.NOTIFICATION_INFO, 4000)
+                        except Exception:
+                            pass
+                except Exception:
+                    pass
     except Exception as e:
         log("update failed: %s" % e, xbmc.LOGWARNING)
         # reset local connection
